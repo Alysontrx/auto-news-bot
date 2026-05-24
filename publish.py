@@ -17,12 +17,22 @@ def publish_post(title, content, media_path=None, chapeu="Notícias"):
     
     try:
         with sync_playwright() as p:
-            # headless=True é OBRIGATÓRIO no Render (servidor na nuvem não tem tela gráfica)
+            # headless=True é OBRIGATÓRIO no Render
             browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
+            
+            # Cria um contexto com User-Agent de um navegador real (Windows + Chrome)
+            context = browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                viewport={'width': 1920, 'height': 1080}
+            )
+            page = context.new_page()
+            
+            # Aplica a capa de invisibilidade (stealth) para enganar o Cloudflare/HostGator
+            from playwright_stealth import stealth_sync
+            stealth_sync(page)
             
             print(f"Acessando: {SITE_ADMIN_URL}")
-            page.goto(SITE_ADMIN_URL)
+            page.goto(SITE_ADMIN_URL, wait_until="domcontentloaded")
             
             # --- TENTATIVA DE LOGIN ---
             print("Tentando fazer login...")
