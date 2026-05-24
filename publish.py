@@ -17,8 +17,8 @@ def publish_post(title, content, media_path=None, chapeu="Notícias"):
     
     try:
         with sync_playwright() as p:
-            #headless=False para vermos o robô trabalhando
-            browser = p.chromium.launch(headless=False)
+            # headless=True é OBRIGATÓRIO no Render (servidor na nuvem não tem tela gráfica)
+            browser = p.chromium.launch(headless=True)
             page = browser.new_page()
             
             print(f"Acessando: {SITE_ADMIN_URL}")
