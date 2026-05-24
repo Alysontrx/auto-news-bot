@@ -25,11 +25,18 @@ def publish_post(title, content, media_path=None, chapeu="Notícias"):
             page.goto(SITE_ADMIN_URL)
             
             # --- TENTATIVA DE LOGIN ---
-            # Os seletores podem precisar de ajuste dependendo do seu painel real
             print("Tentando fazer login...")
-            # Preenche usuário (procura por campo tipo email, text, ou name=username/login/log)
-            user_input = page.locator("input[name='log'], input[id='user_login'], input[name='usuario'], input[name='username'], input[name='login'], input[type='email'], input[type='text']").first
-            user_input.fill(SITE_USERNAME)
+            try:
+                # Preenche usuário
+                user_input = page.locator("input[name='log'], input[id='user_login'], input[name='usuario'], input[name='username'], input[name='login'], input[type='email'], input[type='text']").first
+                user_input.fill(SITE_USERNAME)
+            except Exception as login_err:
+                print("--- ERRO AO ACHAR CAMPO DE LOGIN ---")
+                print(f"URL atual: {page.url}")
+                print(f"Título da página: {page.title()}")
+                print("Primeiras linhas do site (para descobrirmos se fomos bloqueados):")
+                print(page.content()[:1500])
+                raise login_err
             
             # Preenche senha
             pass_input = page.locator("input[name='pwd'], input[id='user_pass'], input[type='password']").first
