@@ -4,6 +4,11 @@ FROM mcr.microsoft.com/playwright/python:v1.44.0-jammy
 # Define a pasta de trabalho
 WORKDIR /app
 
+# Instala fuso horário para suportar America/Sao_Paulo sem dar erro
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ="America/Sao_Paulo"
+RUN apt-get update && apt-get install -y tzdata
+
 # Copia os arquivos de configuração primeiro para aproveitar o cache do Docker
 COPY requirements.txt .
 
