@@ -66,13 +66,28 @@ def init_db():
     conn.commit()
     conn.close()
 
-def get_setting(key, default_value=""):
+def get_setting(key, default_value=''):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT value FROM settings WHERE key = ?", (key,))
+    cursor.execute('SELECT value FROM settings WHERE key = ?', (key,))
     row = cursor.fetchone()
     conn.close()
-    return row[0] if row else default_value
+    
+    val = row[0] if row else ''
+    
+    # Fallback supremo para o servidor Render (que apaga o banco de dados quando reinicia)
+    if not val:
+        env_map = {
+            'gemini_key': 'GEMINI_API_KEY',
+            'site_user': 'SITE_USERNAME',
+            'site_pass': 'SITE_PASSWORD',
+            'wpp_link': 'WPP_LINK'
+        }
+        env_key = env_map.get(key)
+        if env_key:
+            val = os.getenv(env_key, '')
+            
+    return val if val else default_value
 
 def update_setting(key, value):
     conn = sqlite3.connect(DB_PATH)
