@@ -1,12 +1,16 @@
 from playwright.sync_api import sync_playwright
-from config import SITE_ADMIN_URL, SITE_USERNAME, SITE_PASSWORD
+from database import get_setting
 
 def publish_post(title, content, media_path=None, chapeu="Notícias"):
     """
     Usa o Playwright para abrir o navegador, logar no painel admin e publicar a matéria.
     """
-    if not SITE_USERNAME or not SITE_PASSWORD:
-        print("Erro: Usuário e senha do site não configurados no arquivo .env!")
+    SITE_USERNAME = get_setting('site_user', 'Alyson')
+    SITE_PASSWORD = get_setting('site_pass', '')
+    SITE_ADMIN_URL = "https://leiasb.com.br/wp-admin/post-new.php"
+    
+    if not SITE_PASSWORD:
+        print("Erro: Usuário ou senha do site não configurados no banco de dados!")
         return False
         
     print("Iniciando o robô de postagem (Playwright)...")

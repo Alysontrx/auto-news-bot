@@ -1,13 +1,15 @@
 from google import genai
-from config import GEMINI_API_KEY
+from database import get_setting
 import json
 
 def rewrite_news(news_title, news_summary):
     """
     Usa o Gemini para gerar um título chamativo e um texto curto/explicativo.
     """
+    GEMINI_API_KEY = get_setting('gemini_key', '')
+    
     if not GEMINI_API_KEY:
-        print("AVISO: GEMINI_API_KEY não configurada. Retornando texto de fallback.")
+        print("AVISO: GEMINI_API_KEY não configurada no banco de dados. Retornando texto de fallback.")
         return {
             "catchy_title": f"{news_title}",
             "short_text": f"{news_title}\n\nConfira os detalhes sobre esta notícia de tecnologia."
@@ -57,7 +59,7 @@ Retorne APENAS o JSON válido. Exemplo:
                 with open(ad_image_path, "rb") as img_file:
                     encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
                     # Adiciona o link do WhatsApp envolvendo a imagem
-                    wpp_link = "https://wa.me/5511961161382"
+                    wpp_link = get_setting('wpp_link', 'https://wa.me/5511961161382')
                     ad_html += f'<br><a href="{wpp_link}" target="_blank"><img src="data:image/jpeg;base64,{encoded_string}" style="max-width: 100%; border-radius: 8px;" /></a><br>'
             except Exception as img_e:
                 print("Erro ao carregar a imagem do anúncio:", img_e)
@@ -84,7 +86,7 @@ Retorne APENAS o JSON válido. Exemplo:
             try:
                 with open(ad_image_path, "rb") as img_file:
                     encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
-                    wpp_link = "https://wa.me/5511961161382"
+                    wpp_link = get_setting('wpp_link', 'https://wa.me/5511961161382')
                     ad_html += f'<br><a href="{wpp_link}" target="_blank"><img src="data:image/jpeg;base64,{encoded_string}" style="max-width: 100%; border-radius: 8px;" /></a><br>'
             except:
                 pass

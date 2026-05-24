@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoNews Bot - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>📰 LeiaSB <span>Bot</span></h1>
+            <p>Painel de Controle de Automação</p>
+            <div class="header-actions">
+                <a href="/settings" class="btn btn-secondary" style="margin-top:0; width:auto; border:1px solid var(--border-color);">⚙️ Configurações</a>
+                <a href="/logout" class="btn btn-danger" style="padding: 0.75rem 1.5rem; font-size:1rem; margin-right:1rem; border-radius: 8px;">🚪 Sair</a>
+                <button id="btn-run-now" class="btn btn-primary" onclick="runBotNow()">🚀 Executar Agora (1 Post)</button>
+            </div>
+        </header>
+
+        <section class="stats-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="glass-panel" style="padding: 1.5rem; text-align: center;">
+                <h3 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">Posts Hoje</h3>
+                <div id="stat-today" style="font-size: 2.5rem; font-weight: 800; color: white;">0</div>
+            </div>
+            <div class="glass-panel" style="padding: 1.5rem; text-align: center;">
+                <h3 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">Sucesso Total</h3>
+                <div id="stat-success" style="font-size: 2.5rem; font-weight: 800; color: #10b981;">0</div>
+            </div>
+            <div class="glass-panel" style="padding: 1.5rem; text-align: center;">
+                <h3 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">Taxa de Acerto</h3>
+                <div id="stat-rate" style="font-size: 2.5rem; font-weight: 800; color: #3b82f6;">0%</div>
+            </div>
+        </section>
+
+        <main class="dashboard">
+            <section class="glass-panel schedule-panel">
+                <h2>⏰ Agendamentos</h2>
+                <p class="subtitle">Programe os horários de postagem automática</p>
+                
+                <form id="schedule-form" onsubmit="addSchedule(event)">
+                    <div class="input-group">
+                        <label for="time">Horário:</label>
+                        <input type="time" id="time" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="limit">Quantidade (Posts):</label>
+                        <input type="number" id="limit" min="1" max="20" value="5" required>
+                    </div>
+                    <button type="submit" class="btn btn-secondary">+ Adicionar</button>
+                </form>
+
+                <div class="table-container">
+                    <table id="schedules-table">
+                        <thead>
+                            <tr>
+                                <th>Horário</th>
+                                <th>Postagens</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="glass-panel history-panel">
+                <h2>📊 Histórico de Postagens</h2>
+                <p class="subtitle">Últimas notícias publicadas no portal</p>
+                
+                <div class="table-container">
+                    <table id="logs-table">
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Título</th>
+                                <th>Categoria</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

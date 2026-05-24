@@ -2,3 +2,5 @@ requests
 feedparser
 playwright
 google-generativeai
+Flask
+APScheduler

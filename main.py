@@ -2,17 +2,22 @@ import os
 from fetch_news import get_trending_news
 from generate_content import rewrite_news
 from publish import publish_post
+from database import log_post, init_db
+import time
+import requests
 
-def main():
-    print("Iniciando Agente de Postagem...\n")
+def run_bot(limit=5):
+    print(f"Iniciando Agente de Postagem (Limite: {limit})...\n")
     
     # 1. Busca notícias
-    news_list = get_trending_news(limit=10)
+    news_list = get_trending_news(limit=limit)
     
     if not news_list:
         print("Nenhuma notícia encontrada.")
-        return
+        return []
 
+    logs = []
+    
     for i, news in enumerate(news_list):
         print(f"\n--- Processando Notícia {i+1} ---")
         safe_title = news['title'].encode('cp1252', errors='ignore').decode('cp1252')
@@ -22,9 +27,6 @@ def main():
         content = rewrite_news(news['title'], news['summary'])
         safe_new_title = content['catchy_title'].encode('cp1252', errors='ignore').decode('cp1252')
         print(f"Novo Título: {safe_new_title}")
-        
-        import time
-        import requests
         
         # Garante que a pasta images existe
         os.makedirs(os.path.join(os.getcwd(), "images"), exist_ok=True)
@@ -50,19 +52,27 @@ def main():
 
         # 3. Publica (Playwright) passando a imagem de teste
         print("Publicando no site...")
-        success = publish_post(title=content['catchy_title'], content=content['short_text'], media_path=dummy_image_path, chapeu=news.get('category', 'Notícias'))
+        category = news.get('category', 'Notícias')
+        success = publish_post(title=content['catchy_title'], content=content['short_text'], media_path=dummy_image_path, chapeu=category)
+        
+        status = "Sucesso" if success else "Falha"
+        log_post(content['catchy_title'], category, status)
+        logs.append({"title": content['catchy_title'], "status": status})
         
         if success:
-            print("\n--------------------------------------------------")
-            safe_pub_title = content['catchy_title'].encode('cp1252', errors='ignore').decode('cp1252')
-            print(f"Título publicado: {safe_pub_title}")
-            print("--------------------------------------------------\n")
-            print("Robô executou a tentativa de postagem com sucesso!")
+            from database import mark_url_posted
+            mark_url_posted(news['url'])
+            print(f"Robô executou a tentativa de postagem com sucesso!")
         else:
             print("Falha na execução do robô.")
             
-        print("Aguardando 10 segundos antes da próxima postagem...")
-        time.sleep(10)
-        
+        if i < len(news_list) - 1:
+            print("Aguardando 10 segundos antes da próxima postagem...")
+            time.sleep(10)
+            
+    return logs
+
 if __name__ == "__main__":
-    main()
+    init_db()
+    run_bot(limit=1)
+

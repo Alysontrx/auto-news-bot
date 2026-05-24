@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - AutoNews Bot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .nav-bar { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .nav-bar a { color: var(--text-secondary); text-decoration: none; font-weight: 600; transition: color 0.3s; }
+        .nav-bar a:hover, .nav-bar a.active { color: var(--accent-primary); }
+    </style>
+</head>
+<body>
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>⚙️ Configurações <span>do Sistema</span></h1>
+            <p>Altere as chaves e credenciais sem mexer no código</p>
+            <div class="header-actions">
+                <a href="/logout" class="btn btn-danger">Sair</a>
+            </div>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="/">← Voltar para o Dashboard</a>
+        </nav>
+
+        <main>
+            <section class="glass-panel">
+                <form id="settings-form" onsubmit="saveSettings(event)">
+                    <div class="dashboard" style="grid-template-columns: 1fr 1fr;">
+                        <div>
+                            <h3>🔐 Credenciais do Site WordPress</h3>
+                            <br>
+                            <div class="input-group">
+                                <label for="site_user">Usuário do Site:</label>
+                                <input type="text" id="site_user" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="site_pass">Senha de Aplicativo (Site):</label>
+                                <input type="password" id="site_pass" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="admin_password">Senha do Painel (Aqui):</label>
+                                <input type="text" id="admin_password" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3>🤖 Inteligência Artificial & Anúncios</h3>
+                            <br>
+                            <div class="input-group">
+                                <label for="gemini_key">Chave de API do Google Gemini:</label>
+                                <input type="password" id="gemini_key">
+                            </div>
+                            <div class="input-group">
+                                <label for="wpp_link">Link do WhatsApp (Banner):</label>
+                                <input type="url" id="wpp_link">
+                            </div>
+                            <div class="input-group">
+                                <label for="blocked_words">Palavras Proibidas (separadas por vírgula):</label>
+                                <textarea id="blocked_words" rows="3" style="width: 100%; padding: 0.75rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; color: white;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; text-align: right;">
+                        <button type="submit" class="btn btn-primary">💾 Salvar Configurações</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadSettings);
+
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/settings');
+                const data = await res.json();
+                document.getElementById('site_user').value = data.site_user || '';
+                document.getElementById('site_pass').value = data.site_pass || '';
+                document.getElementById('gemini_key').value = data.gemini_key || '';
+                document.getElementById('wpp_link').value = data.wpp_link || '';
+                document.getElementById('blocked_words').value = data.blocked_words || '';
+                document.getElementById('admin_password').value = data.admin_password || '';
+            } catch(e) {
+                console.error("Erro ao carregar configurações", e);
+            }
+        }
+
+        async function saveSettings(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = 'Salvando...';
+            
+            const payload = {
+                site_user: document.getElementById('site_user').value,
+                site_pass: document.getElementById('site_pass').value,
+                gemini_key: document.getElementById('gemini_key').value,
+                wpp_link: document.getElementById('wpp_link').value,
+                blocked_words: document.getElementById('blocked_words').value,
+                admin_password: document.getElementById('admin_password').value
+            };
+
+            try {
+                const res = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    alert("Configurações salvas com sucesso!");
+                }
+            } catch(err) {
+                alert("Erro ao salvar.");
+            } finally {
+                btn.innerHTML = '💾 Salvar Configurações';
+            }
+        }
+    </script>
+</body>
+</html>

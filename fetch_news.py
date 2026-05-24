@@ -42,12 +42,10 @@ def get_trending_news(limit=5):
             print("Erro ao extrair imagem da notícia:", e)
         return None
 
+    from database import get_setting
     # Lista de palavras para evitar (assuntos polêmicos/política)
-    blocked_keywords = [
-        'lula', 'bolsonaro', 'stf', 'moraes', 'pt', 'pl', 'política', 
-        'eleições', 'governo', 'haddad', 'milei', 'maduro', 'pacheco',
-        'deputado', 'senador', 'congresso', 'câmara', 'stj'
-    ]
+    blocked_words_str = get_setting('blocked_words', 'lula, bolsonaro, stf, pt, política')
+    blocked_keywords = [w.strip().lower() for w in blocked_words_str.split(',') if w.strip()]
 
     news_items = []
     for entry in feed.entries:
@@ -55,6 +53,11 @@ def get_trending_news(limit=5):
         
         # Pula a notícia se tiver palavra bloqueada
         if any(kw in title_lower for kw in blocked_keywords):
+            continue
+            
+        # Pula a notícia se já foi postada anteriormente
+        from database import is_url_posted
+        if is_url_posted(entry.link):
             continue
             
         # Tenta extrair a imagem real do site da notícia
