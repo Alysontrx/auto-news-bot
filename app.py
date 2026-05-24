@@ -104,15 +104,31 @@ def api_toggle_schedule(sched_id):
 def api_get_logs():
     return jsonify(get_logs(limit=50))
 
+@app.route('/api/logs/<int:log_id>', methods=['DELETE'])
+@login_required
+def api_delete_log(log_id):
+    from database import delete_log
+    import subprocess
+    
+    # 1. Pega o título e remove do banco
+    title = delete_log(log_id)
+    if title:
+        # 2. Roda o robô lixeiro em background para deletar no WordPress
+        subprocess.Popen(["python", "delete_post.py", title])
+        return jsonify({"success": True, "message": "Enviado para a lixeira"})
+    
+    return jsonify({"success": False, "message": "Log não encontrado"}), 404
+
 # --- FORÇAR EXECUÇÃO ---
 @app.route('/api/run', methods=['POST'])
 @login_required
 def api_run_now():
+    import subprocess
     data = request.json
     limit = int(data.get('limit', 1))
     
-    thread = threading.Thread(target=job_runner, args=(limit,))
-    thread.start()
+    # Agora usa Subprocess para rodar de forma 100% isolada e não travar o painel!
+    subprocess.Popen(["python", "main.py", str(limit)])
     
     return jsonify({"success": True, "message": f"Iniciado para {limit} postagem(ns)"})
 

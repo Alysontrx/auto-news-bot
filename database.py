@@ -143,6 +143,22 @@ def log_post(title, category, status="Sucesso"):
     conn.commit()
     conn.close()
 
+def delete_log(log_id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Busca o title antes de deletar
+    cursor.execute('SELECT title FROM logs WHERE id = ?', (log_id,))
+    row = cursor.fetchone()
+    title = row[0] if row else None
+    
+    if title:
+        cursor.execute('DELETE FROM logs WHERE id = ?', (log_id,))
+        conn.commit()
+        
+    conn.close()
+    return title
+
 def get_logs(limit=50):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()

@@ -73,6 +73,14 @@ def run_bot(limit=5):
     return logs
 
 if __name__ == "__main__":
+    import sys
+    limit = 1
+    if len(sys.argv) > 1:
+        try:
+            limit = int(sys.argv[1])
+        except ValueError:
+            pass
+            
     init_db()
-    run_bot(limit=1)
+    run_bot(limit=limit)
 

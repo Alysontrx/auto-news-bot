@@ -121,19 +121,39 @@ async function loadLogs() {
             return;
         }
 
-        data.forEach(item => {
+        data.forEach(log => {
             const tr = document.createElement('tr');
-            const statusClass = item.status.toLowerCase() === 'sucesso' ? 'status-success' : 'status-error';
+            const statusColor = log.status === 'Sucesso' ? '#10b981' : '#ef4444';
             tr.innerHTML = `
-                <td style="color: var(--text-secondary)">${item.date_posted}</td>
-                <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.title}">${item.title}</td>
-                <td>${item.category}</td>
-                <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                <td>${log.title}</td>
+                <td>${log.category}</td>
+                <td>${log.date_posted}</td>
+                <td><span style="color: ${statusColor}; font-weight: 600;">${log.status}</span></td>
+                <td>
+                    ${log.status === 'Sucesso' ? `<button class="btn btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;" onclick="deleteLog(${log.id})">🗑️</button>` : ''}
+                </td>
             `;
             tbody.appendChild(tr);
         });
     } catch(e) {
         console.error("Erro ao carregar logs", e);
+    }
+}
+
+async function deleteLog(logId) {
+    if(!confirm("Atenção: Isso enviará a notícia para a Lixeira do seu site WordPress! Deseja continuar?")) return;
+    
+    try {
+        const res = await fetch(`/api/logs/${logId}`, { method: 'DELETE' });
+        if(res.ok) {
+            alert("A exclusão foi agendada. O robô lixeiro está apagando a notícia do site em background.");
+            loadLogs();
+            loadStats();
+        } else {
+            alert("Erro ao excluir log.");
+        }
+    } catch(e) {
+        alert("Falha na comunicação.");
     }
 }
 

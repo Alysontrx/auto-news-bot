@@ -11,8 +11,9 @@ scheduler = BackgroundScheduler()
 
 def job_runner(limit):
     """Função que será executada nos horários agendados"""
+    import subprocess
     try:
-        run_bot(limit=limit)
+        subprocess.Popen(["python", "main.py", str(limit)])
     except Exception as e:
         print(f"Erro no job_runner: {e}")
 
