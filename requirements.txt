@@ -1,6 +1,6 @@
 requests
 feedparser
 playwright
-google-generativeai
+google-genai
 Flask
 APScheduler
