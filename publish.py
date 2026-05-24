@@ -27,16 +27,16 @@ def publish_post(title, content, media_path=None, chapeu="Notícias"):
             # --- TENTATIVA DE LOGIN ---
             # Os seletores podem precisar de ajuste dependendo do seu painel real
             print("Tentando fazer login...")
-            # Preenche usuário (procura por campo tipo email, text, ou name=username/login)
-            user_input = page.locator("input[name='usuario'], input[name='username'], input[name='login'], input[type='email']").first
+            # Preenche usuário (procura por campo tipo email, text, ou name=username/login/log)
+            user_input = page.locator("input[name='log'], input[id='user_login'], input[name='usuario'], input[name='username'], input[name='login'], input[type='email'], input[type='text']").first
             user_input.fill(SITE_USERNAME)
             
             # Preenche senha
-            pass_input = page.locator("input[type='password']").first
+            pass_input = page.locator("input[name='pwd'], input[id='user_pass'], input[type='password']").first
             pass_input.fill(SITE_PASSWORD)
             
             # Clica no botão de entrar
-            login_btn = page.locator("button[type='submit'], input[type='submit'], button:has-text('Entrar'), button:has-text('Login')").first
+            login_btn = page.locator("input[name='wp-submit'], button[type='submit'], input[type='submit'], button:has-text('Entrar'), button:has-text('Login')").first
             login_btn.click()
             
             page.wait_for_load_state('networkidle')
