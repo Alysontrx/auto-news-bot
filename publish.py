@@ -27,9 +27,9 @@ def publish_post(title, content, media_path=None, chapeu="Notícias"):
                 ]
             )
             
-            # Cria um contexto com User-Agent de um navegador real (Windows + Chrome)
+            # Cria um contexto com User-Agent EXCLUSIVO para podermos liberar no Cloudflare
             context = browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+                user_agent="RoboLeiaSB-AcessoAutorizado",
                 viewport={'width': 1920, 'height': 1080}
             )
             
