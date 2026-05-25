@@ -17,23 +17,26 @@ def publish_post(title, content, media_path=None, chapeu="Notícias"):
     
     try:
         with sync_playwright() as p:
-            # headless=True é OBRIGATÓRIO no Render
-            browser = p.chromium.launch(headless=True)
+            # Usando argumentos nativos para burlar Cloudflare sem depender da biblioteca externa que está quebrando no Linux
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    '--disable-blink-features=AutomationControlled',
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox'
+                ]
+            )
             
             # Cria um contexto com User-Agent de um navegador real (Windows + Chrome)
             context = browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
                 viewport={'width': 1920, 'height': 1080}
             )
-            page = context.new_page()
             
-            # Aplica a capa de invisibilidade (stealth) para enganar o Cloudflare/HostGator
-            try:
-                from playwright_stealth import stealth_sync
-                stealth_sync(page)
-            except ImportError:
-                from playwright_stealth import stealth
-                stealth(page)
+            # Remove a marcação de 'robô' do navegador (Invisibilidade nativa)
+            context.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            
+            page = context.new_page()
             
             print(f"Acessando: {SITE_ADMIN_URL}")
             page.goto(SITE_ADMIN_URL, wait_until="domcontentloaded")
