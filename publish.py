@@ -28,8 +28,12 @@ def publish_post(title, content, media_path=None, chapeu="Notícias"):
             page = context.new_page()
             
             # Aplica a capa de invisibilidade (stealth) para enganar o Cloudflare/HostGator
-            from playwright_stealth import stealth_sync
-            stealth_sync(page)
+            try:
+                from playwright_stealth import stealth_sync
+                stealth_sync(page)
+            except ImportError:
+                from playwright_stealth import stealth
+                stealth(page)
             
             print(f"Acessando: {SITE_ADMIN_URL}")
             page.goto(SITE_ADMIN_URL, wait_until="domcontentloaded")

@@ -167,18 +167,39 @@ async function runBotNow() {
         const res = await fetch('/api/run', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ limit: 1 }) // Roda só 1 por padrão no botão manual
+            body: JSON.stringify({ limit: 1 })
         });
         
         if(res.ok) {
-            alert("Robô iniciado em segundo plano! Ele publicará 1 notícia em breve.");
+            showToast("Robô iniciado em segundo plano!<br><span style='font-size: 0.85rem; color: var(--text-secondary);'>Ele publicará 1 notícia em breve.</span>");
             // Atualiza os logs para mostrar quando terminar
             setTimeout(loadLogs, 15000); 
         }
     } catch(e) {
-        alert("Erro ao acionar o robô");
+        showToast("Erro ao acionar o robô", "error");
     } finally {
         btn.disabled = false;
         btn.innerHTML = '🚀 Executar Agora (1 Post)';
     }
+}
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    const icon = type === 'success' ? '🚀' : '⚠️';
+    toast.innerHTML = `<span style="font-size: 1.8rem;">${icon}</span> <div>${message}</div>`;
+    
+    container.appendChild(toast);
+    
+    // Animação de entrada
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Remove após 5 segundos
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    }, 5000);
 }
