@@ -8,3 +8,4 @@ gunicorn
 python-dotenv
 beautifulsoup4
 playwright-stealth
+psycopg2-binary
