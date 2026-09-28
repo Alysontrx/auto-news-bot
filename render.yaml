@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: auto-news-bot
+    env: docker
+    region: ohio
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SITE_USERNAME
+        sync: false
+      - key: SITE_PASSWORD
+        sync: false
+      - key: WPP_LINK
+        value: "https://wa.me/5511961161382"
