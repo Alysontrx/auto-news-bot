@@ -8,6 +8,11 @@ import os
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+# Iniciar banco e agendador no nível do módulo para o Gunicorn rodar
+with app.app_context():
+    init_db()
+    init_scheduler()
+
 # Decorator de proteção
 def login_required(f):
     @wraps(f)
