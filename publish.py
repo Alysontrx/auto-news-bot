@@ -26,7 +26,11 @@ def publish_post(title, content, media_path=None, chapeu="Notícias"):
                     '--disable-setuid-sandbox',
                     '--disable-dev-shm-usage',
                     '--single-process',
-                    '--no-zygote'
+                    '--no-zygote',
+                    '--disable-gpu',
+                    '--disable-software-rasterizer',
+                    '--mute-audio',
+                    '--blink-settings=imagesEnabled=false'
                 ]
             )
             
